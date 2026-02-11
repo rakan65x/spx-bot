@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 import json
 import os
 import warnings
+import asyncio
 warnings.filterwarnings('ignore')
 
 print("Installing packages...")
-packages = ['yfinance', 'pandas', 'numpy', 'scikit-learn', 'schedule', 'python-telegram-bot==13.15']
+packages = ['yfinance', 'pandas', 'numpy', 'scikit-learn', 'schedule', 'python-telegram-bot==20.8']
 for pkg in packages:
     try:
         __import__(pkg.replace('-', '_').split('==')[0])
@@ -20,12 +21,11 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
-from telegram import Bot
+from telegram.ext import ApplicationBuilder
 import schedule
 
 TELEGRAM_TOKEN = "8400621815:AAF8ebrgJXjjmUsz6Y7Y3Z624-Vwetlc5C4"
 CHAT_ID = "803731534"
-bot_telegram = Bot(token=TELEGRAM_TOKEN)
 CAPITAL = 100000000
 TICKER = "SPY"
 DAILY_TRADES = 5
@@ -150,7 +150,10 @@ class SmartBot:
             message += f"\n#{sig['number']} {sig['type']}\nStrike: ${sig['strike']:.2f}\nPremium: ${sig['premium']:.2f}\nConfidence: {sig['confidence']:.0f}%\nTP: ${sig['tp']:.2f} SL: ${sig['sl']:.2f}\n"
         message += f"\nCapital: ${self.capital:,}\nPaper Trading"
         try:
-            bot_telegram.send_message(chat_id=CHAT_ID, text=message)
+            async def send():
+                app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+                await app.bot.send_message(chat_id=CHAT_ID, text=message)
+            asyncio.run(send())
             print("Telegram sent!")
         except Exception as e:
             print(f"Telegram error: {e}")
