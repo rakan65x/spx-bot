@@ -173,7 +173,7 @@ def run_bot():
     bot = SmartBot()
     schedule.every().day.at("13:00").do(bot.daily_routine)
     print("SPX BOT RUNNING")
-    print("Daily at 13:00 UTC (16:00 Saudi)")
+    print("Daily at 13:00 UTC")
     bot.daily_routine()
     while True:
         schedule.run_pending()
@@ -186,17 +186,3 @@ if __name__ == "__main__":
         print("Stopped")
     except Exception as e:
         print(f"Error: {e}")
-```
-
----
-
-# 📄 **ملف 2: requirements.txt**
-
-**انسخ هذا:**
-```
-yfinance
-pandas
-numpy
-scikit-learn
-schedule
-python-telegram-bot==13.15
